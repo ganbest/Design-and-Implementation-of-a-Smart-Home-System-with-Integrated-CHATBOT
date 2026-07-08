@@ -4,13 +4,12 @@ Hệ thống được thiết kế theo mô hình phân lớp xử lý song song
 
 ```mermaid
 graph TD
-    %% Định nghĩa các node chính
     OpenAI["OpenAI API (ChatGPT LLM)"]
     Pi5["Raspberry Pi 5<br>(Bộ xử lý trung tâm / Edge Core)"]
     App["Web / Android App<br>(Capacitor / Firebase RTDB)"]
     Cam["ESP32-CAM / Camera<br>(Trích xuất Face Embeddings)"]
     ESP32["ESP32 DevKitC<br>(Khối ngoại vi IoT Node)"]
-    
+
     subgraph Sensors ["Khối Cảm Biến Đầu Vào"]
         DHT["DHT11 (Nhiệt độ/Độ ẩm)"]
         MQ2["MQ-2 (Khói/Khí Gas)"]
@@ -25,31 +24,27 @@ graph TD
         Buzzer["Buzzer / Đèn LED (Báo động)"]
     end
 
-    %% Định nghĩa các kết nối và giao thức
     Pi5 <--> |"HTTPS API"| OpenAI
     App <--> |"WebSockets / Realtime DB"| Pi5
     Cam --> |"RTSP / CSI Stream"| Pi5
     Pi5 <--> |"UART Serial / MQTT"| ESP32
-    
+
     ESP32 --- DHT
     ESP32 --- MQ2
     ESP32 --- PIR
     ESP32 --- Rain
-    
+
     ESP32 --- Servo
     ESP32 --- Relay
     ESP32 --- Fan
     ESP32 --- Buzzer
 
-    %% Định nghĩa style màu sắc cho trực quan
     style OpenAI fill:#10a37f,stroke:#fff,stroke-width:2px,color:#fff
     style Pi5 fill:#c51a4a,stroke:#fff,stroke-width:2px,color:#fff
     style App fill:#4285f4,stroke:#fff,stroke-width:2px,color:#fff
     style Cam fill:#e67e22,stroke:#fff,stroke-width:2px,color:#fff
     style ESP32 fill:#2ecc71,stroke:#fff,stroke-width:2px,color:#fff
 
-
----
 
 ## 🛠️ Phân Tích Chức Năng Kỹ Thuật Chi Tiết
 
