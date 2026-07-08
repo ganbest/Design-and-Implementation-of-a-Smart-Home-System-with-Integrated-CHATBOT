@@ -1,33 +1,52 @@
-# Smart Home System Integrated with Chatbot AI & Machine Learning
-
-Mô hình hệ thống Nhà thông minh (Smart Home) toàn diện ứng dụng kết hợp giữa **Edge Computing (Raspberry Pi 5)** và **IoT Node (ESP32)**. Hệ thống giải quyết bài toán giao tiếp tự nhiên bằng giọng nói/văn bản qua LLM (ChatGPT API), tự động hóa hành vi dựa trên học máy (KNN) và bảo mật đa lớp nâng cao (FaceID Anti-Spoofing, RFID, Telegram OTP).
-
----
-
 ## 🚀 Kiến Trúc Hệ Thống (System Architecture)
 
 Hệ thống được thiết kế theo mô hình phân lớp xử lý song song nhằm tối ưu hóa băng thông và giảm thiểu độ trễ:
 
-                                ┌───────────────────────┐
-                                │    OpenAI API (GPT)   │
-                                └───────────▲───────────┘
-                                            │ (HTTPS)
-┌───────────────────────┐           ┌───────────▼───────────┐           ┌───────────────────────┐
-│   Web / Android App   ├──────────►│    Raspberry Pi 5     │◄──────────┤      ESP32-CAM        │
-│  (Capacitor/Firebase) │ (WebSock) │  (Bộ xử lý trung tâm) │ (CSI/RTSP)│   (Nhận diện khuôn mặt)│
-└───────────────────────┘           └─────▲───────────┬─────┘           └───────────────────────┘
-│           │
-│           │ (Giao tiếp Serial / MQTT)
-│           ▼
-┌─────┴─────────────────┐
-│     ESP32 DevKitC     │
-│ (Khối ngoại vi Node)  │
-└─────┬───────────┬─────┘
-│           │
-▼           ▼
-[Cảm biến]    [Thiết bị chấp hành]
-DHT11, MQ-2   Servo, Relay, Quạt
-PIR, Mưa      Buzzer, Đèn LED
+```mermaid
+graph TD
+    %% Định nghĩa các node chính
+    OpenAI["OpenAI API (ChatGPT LLM)"]
+    Pi5["Raspberry Pi 5<br>(Bộ xử lý trung tâm / Edge Core)"]
+    App["Web / Android App<br>(Capacitor / Firebase RTDB)"]
+    Cam["ESP32-CAM / Camera<br>(Trích xuất Face Embeddings)"]
+    ESP32["ESP32 DevKitC<br>(Khối ngoại vi IoT Node)"]
+    
+    subgraph Sensors ["Khối Cảm Biến Đầu Vào"]
+        DHT["DHT11 (Nhiệt độ/Độ ẩm)"]
+        MQ2["MQ-2 (Khói/Khí Gas)"]
+        PIR["HC-SR501 (Hồng ngoại)"]
+        Rain["Cảm biến mưa"]
+    end
+
+    subgraph Actuators ["Khối Chấp Hành / Cảnh Báo"]
+        Servo["Động cơ Servo (Cửa/Giàn phơi)"]
+        Relay["Module Relay (Đèn chiếu sáng)"]
+        Fan["Quạt DC (Transistor Đệm 2N2222)"]
+        Buzzer["Buzzer / Đèn LED (Báo động)"]
+    end
+
+    %% Định nghĩa các kết nối và giao thức
+    Pi5 <--> |"HTTPS API"| OpenAI
+    App <--> |"WebSockets / Realtime DB"| Pi5
+    Cam --> |"RTSP / CSI Stream"| Pi5
+    Pi5 <--> |"UART Serial / MQTT"| ESP32
+    
+    ESP32 --- DHT
+    ESP32 --- MQ2
+    ESP32 --- PIR
+    ESP32 --- Rain
+    
+    ESP32 --- Servo
+    ESP32 --- Relay
+    ESP32 --- Fan
+    ESP32 --- Buzzer
+
+    %% Định nghĩa style màu sắc cho trực quan
+    style OpenAI fill:#10a37f,stroke:#fff,stroke-width:2px,color:#fff
+    style Pi5 fill:#c51a4a,stroke:#fff,stroke-width:2px,color:#fff
+    style App fill:#4285f4,stroke:#fff,stroke-width:2px,color:#fff
+    style Cam fill:#e67e22,stroke:#fff,stroke-width:2px,color:#fff
+    style ESP32 fill:#2ecc71,stroke:#fff,stroke-width:2px,color:#fff
 
 
 ---
