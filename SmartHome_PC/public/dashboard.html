@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Home Premium - Quốc Hiếu 2003</title>
+    <link rel="icon" type="image/png" href="logoh.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+    /* GIỮ NGUYÊN CSS GỐC CỦA BẠN */
+:root { 
+    --primary-blue: #0d6efd; 
+    --bg-gray: #f4f7f6; 
+    --card-bg: #ffffff;
+    --text-color: #2c3e50;
+    --border-color: #e2e8f0;
+    --env-khach-bg: linear-gradient(135deg, #fff 0%, #e3f2fd 100%);
+    --env-ngu-bg: linear-gradient(135deg, #fff 0%, #fff3e0 100%);
+}
+
+body.dark-mode {
+    --bg-gray: #0f172a;
+    --card-bg: #1e293b;
+    --text-color: #f8fafc;
+    --border-color: #334155;
+    --env-khach-bg: linear-gradient(135deg, #1e293b 0%, #1e3a8a 100%);
+    --env-ngu-bg: linear-gradient(135deg, #1e293b 0%, #7c2d12 100%);
+    background-color: var(--bg-gray);
+    color: var(--text-color);
+}
+
+body.dark-mode .text-muted {
+    color: #cbd5e1 !important;
+}
+
+body {
+    background-color: var(--bg-gray);
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    transition: all 0.5s ease;
+}
+
+.header-bar {
+    background: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    padding: 20px;
+    margin: 20px 0;
+    border-bottom: 4px solid var(--primary-blue);
+    color: var(--text-color);
+    transition: background 0.5s ease;
+}
+
+.section-title {
+    border-left: 6px solid var(--primary-blue);
+    padding-left: 15px;
+    margin: 25px 0 15px;
+    font-weight: 800;
+    color: var(--text-color);
+    text-transform: uppercase;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: 0.3s;
+    overflow: hidden;
+    color: var(--text-color);
+}
+
+.card-btn {
+    cursor: pointer;
+    min-height: 130px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid transparent;
+}
+
+.card-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border-color: var(--primary-blue);
+}
+
+.card-auto {
+    background: var(--card-bg);
+    border: 1px dashed var(--border-color);
+    cursor: default;
+    border-radius: 25px;
+}
+
+.status-val {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-top: 5px;
+}
+
+.btn-scene {
+    border: none;
+    font-weight: bold;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    padding: 15px;
+    color: white;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.btn-scene i {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.btn-scene:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+.bg-work {
+    background: linear-gradient(135deg, #34495e, #2c3e50);
+}
+
+.bg-sleep {
+    background: linear-gradient(135deg, #1a237e, #3949ab);
+}
+
+.bg-movie {
+    background: linear-gradient(135deg, #f1c40f, #f39c12);
+    color: #000;
+}
+
+.bg-party {
+    background: linear-gradient(135deg, #e91e63, #f06292);
+}
+
+.bg-danger-custom {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    border: 2px solid #fff;
+}
+
+.rfid-card {
+    background: var(--card-bg);
+    color: var(--text-color);
+    border-radius: 25px;
+    padding: 25px;
+    border: 1px solid var(--border-color);
+}
+
+.rfid-table {
+    color: var(--text-color);
+    margin-top: 15px;
+}
+
+.rfid-table th {
+    color: #94a3b8;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.rfid-table td {
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px 0;
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+.level-0 { color: #bdc3c7 !important; }
+.level-1 { color: #2ecc71 !important; }
+.level-2 { color: #3498db !important; }
+.level-3 { color: #e74c3c !important; }
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.spinning {
+    animation: spin 1.5s linear infinite;
+}
+
+.spinning-fast {
+    animation: spin 0.6s linear infinite;
+}
+
+.scroll-area {
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.scroll-area::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scroll-area::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 10px;
+}
+
+.ai-locked {
+    opacity: 0.35;
+    pointer-events: none;
+    filter: grayscale(0.8);
+    transition: all 0.4s ease;
+}
+
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.theme-switch {
+    display: inline-block;
+    height: 34px;
+    position: relative;
+    width: 60px;
+}
+
+.theme-switch input {
+    display: none;
+}
+
+.slider {
+    background-color: #ccc;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+    border-radius: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px;
+}
+
+.slider:before {
+    background-color: #fff;
+    bottom: 4px;
+    content: "";
+    height: 26px;
+    left: 4px;
+    position: absolute;
+    transition: .4s;
+    width: 26px;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+input:checked + .slider {
+    background-color: var(--primary-blue);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.slider i {
+    font-size: 14px;
+    z-index: 1;
+}
+
+.fa-sun {
+    color: #94a3b8;
+}
+
+.fa-moon {
+    color: #94a3b8;
+}
+
+.card-khach {
+    background: var(--env-khach-bg) !important;
+}
+
+.card-ngu {
+    background: var(--env-ngu-bg) !important;
+}
+
+.btn-logout {
+    font-size: 0.85rem;
+    font-weight: bold;
+    padding: 5px 12px;
+    border-radius: 10px;
+    color: #dc3545 !important;
+    text-decoration: none;
+    border: 1px solid #dc3545;
+    margin-left: 10px;
+    transition: 0.3s;
+}
+
+.btn-logout:hover {
+    background: #dc3545;
+    color: white !important;
+}
+
+/* =======================================================
+   TAB DESKTOP
+======================================================= */
+
+.tab-navigation {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+
+.tab-item {
+    padding: 12px 24px;
+    border-radius: 15px;
+    background: var(--card-bg);
+    color: var(--text-color);
+    cursor: pointer;
+    font-weight: bold;
+    border: 1px solid var(--border-color);
+    transition: 0.3s;
+    white-space: nowrap;
+}
+
+.tab-item.active {
+    background: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+/* =======================================================
+   LED + KNN
+======================================================= */
+
+.color-picker-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(0,0,0,0.05);
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+}
+
+.color-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid white;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.knn-stat-card {
+    border-left: 5px solid var(--primary-blue);
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+/* =======================================================
+   PI5 3.5 INCH SAAS SIDEBAR MODE
+======================================================= */
+
+@media screen and (max-width: 480px)and (max-height:320px) {
+
+    html,
+    body {
+    width: 100vw !important;
+    height: 100vh !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+    body {
+
+    background: var(--bg-gray);
+
+    margin:0;
+    padding:0;
+    }
+
+    /* ===================================================
+       SIDEBAR
+    =================================================== */
+
+    .tab-navigation {
+
+        position: fixed;
+
+        top: 0;
+        left: 0;
+
+        width: 58px;
+        height: 100vh;
+
+        background: #111827;
+
+        z-index: 99999;
+
+        display: flex;
+        flex-direction: column;
+
+        align-items: center;
+
+        justify-content: space-evenly;
+
+        padding: 10px 0;
+
+        border-right: 1px solid rgba(255,255,255,0.08);
+
+        overflow: hidden;
+    }
+
+    .tab-item {
+
+        width: 46px;
+        height: 46px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 14px;
+
+        font-size: 0.9rem;
+
+        padding: 0;
+
+        background: transparent;
+
+        color: #94a3b8;
+
+        border: none;
+
+        transition: 0.3s;
+    }
+
+    .tab-item.active {
+
+        background: var(--primary-blue);
+
+        color: white;
+
+        box-shadow: 0 0 15px rgba(13,110,253,0.4);
+    }
+
+    .tab-item i {
+        font-size: 1rem;
+    }
+
+    /* ===================================================
+       MAIN CONTAINER
+    =================================================== */
+
+    .container,
+    .container-fluid {
+
+    width: calc(100% - 58px) !important;
+
+    max-width: calc(100% - 58px) !important;
+
+    margin-left: 58px !important;
+
+    padding: 6px !important;
+}
+
+    /* ===================================================
+       TAB CONTENT
+    =================================================== */
+
+    .tab-pane {
+
+        width: 100% !important;
+
+        min-height: auto !important;
+
+        overflow-y: visible;
+
+        overflow-x: hidden;
+
+        padding-bottom: 20px;
+    }
+
+    .tab-pane.active {
+        display: block;
+    }
+
+    /* ===================================================
+       HEADER
+    =================================================== */
+
+    .header-bar {
+
+        width: 100% !important;
+
+        padding: 8px;
+
+        margin: 4px 0;
+
+        border-radius: 14px;
+    }
+
+    .header-bar h4 {
+        font-size: 0.8rem;
+    }
+
+    .header-bar small {
+        font-size: 0.5rem;
+    }
+
+    #time-display {
+        font-size: 0.6rem;
+    }
+
+    .btn-logout {
+
+        font-size: 0.45rem;
+
+        padding: 2px 5px;
+
+        border-radius: 8px;
+    }
+
+    /* ===================================================
+       SWITCH
+    =================================================== */
+
+    .theme-switch {
+
+        width: 44px;
+
+        height: 24px;
+    }
+
+    .slider:before {
+
+        width: 18px;
+
+        height: 18px;
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(18px);
+    }
+
+    /* ===================================================
+       TITLES
+    =================================================== */
+
+    .section-title {
+
+        font-size: 0.7rem;
+
+        margin: 8px 0;
+    }
+
+    /* ===================================================
+       GRID
+    =================================================== */
+
+    .row {
+
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+        --bs-gutter-x: 0.3rem;
+
+        --bs-gutter-y: 0.3rem;
+    }
+
+    .col-md-2,
+    .col-md-3,
+    .col-md-4,
+    .col-md-6,
+    .col-6,
+    .col-12 {
+
+        padding-left: 2px !important;
+
+        padding-right: 2px !important;
+    }
+
+    /* ===================================================
+       CARD
+    =================================================== */
+
+    .card,
+    .rfid-card {
+
+        width: 100% !important;
+
+        border-radius: 14px;
+    }
+
+    .card-btn {
+
+        min-height: 85px;
+
+        padding: 8px;
+    }
+
+    .status-val {
+        font-size: 0.7rem;
+    }
+
+    .h3 {
+        font-size: 0.9rem !important;
+    }
+
+    h5,
+    h6 {
+        font-size: 0.62rem !important;
+    }
+
+    p,
+    small {
+        font-size: 0.52rem !important;
+    }
+
+    /* ===================================================
+       BUTTON SCENE
+    =================================================== */
+
+    .btn-scene {
+
+        height: 70px;
+
+        padding: 3px;
+
+        font-size: 0.65rem;
+
+        border-radius: 10px;
+    }
+
+    .btn-scene i {
+
+        font-size: 0.7rem;
+
+        margin-bottom: 2px;
+    }
+
+    /* ===================================================
+       RFID
+    =================================================== */
+
+    .scroll-area {
+
+        max-height: 70px;
+
+        overflow-y: auto;
+    }
+
+    .rfid-table td,
+    .rfid-table th {
+
+        font-size: 0.48rem;
+    }
+
+    /* ===================================================
+       AI
+    =================================================== */
+
+    #val-AI-Response {
+        font-size: 0.62rem !important;
+    }
+
+    .knn-stat-card {
+
+        padding: 7px;
+
+        margin-bottom: 4px;
+    }
+
+    /* ===================================================
+       IMAGE / CANVAS
+    =================================================== */
+
+    img,
+    canvas {
+
+        max-width: 100% !important;
+    }
+
+    /* ===================================================
+       SCROLLBAR
+    =================================================== */
+
+    ::-webkit-scrollbar {
+
+        width: 0px;
+
+        background: transparent;
+    }
+}
+    .rgb-comingsoon-card{
+
+    padding:12px !important;
+
+    border:none !important;
+
+    border-radius:16px !important;
+
+    background:rgba(255,255,255,0.82) !important;
+
+    backdrop-filter:blur(8px);
+
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+
+    min-height:auto !important;
+}
+
+.rgb-comingsoon-content{
+
+    padding:6px 0;
+}
+
+.rgb-icon{
+
+    font-size:2rem !important;
+
+    color:#9ca3af;
+
+    opacity:0.7;
+}
+
+.rgb-comingsoon-card h6{
+
+    font-size:0.9rem !important;
+}
+
+.rgb-comingsoon-card p{
+
+    font-size:0.68rem !important;
+
+    line-height:1.3;
+}
+
+.rgb-comingsoon-card .badge{
+
+    font-size:0.55rem;
+
+    padding:4px 8px;
+}
+    </style>
+</head>
+<body>
+
+<div class="container py-2">
+    <!-- Header GỐC -->
+    <div class="header-bar d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="mb-0 text-primary fw-bold d-flex align-items-center">
+
+    <img
+        src="Logo chính thức.png"
+        alt="IUH Logo"
+        style="
+            height:55px;
+            margin-right:12px;
+        "
+    >
+
+    SMART HOME PRO AI
+
+</h4>
+            <div class="d-flex align-items-center mt-1">
+                <small class="text-muted">User: <b id="display-user-name" class="text-primary">Đang tải...</b> | IUH Student</small>
+                <a href="./index.html" class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt me-1"></i>Đăng xuất</a>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="checkbox">
+                    <input type="checkbox" id="checkbox" />
+                    <div class="slider">
+                        <i class="fas fa-sun"></i>
+                        <i class="fas fa-moon"></i>
+                    </div>
+                </label>
+            </div>
+            <div id="time-display" class="fw-bold text-secondary">00:00:00</div>
+        </div>
+    </div>
+
+    <!-- =======================================================
+     HỆ THỐNG TAB SAAS
+======================================================= -->
+
+<div class="tab-navigation">
+
+    <div class="tab-item active" onclick="changeTab(0)">
+        <i class="fas fa-house"></i>
+    </div>
+
+    <div class="tab-item" onclick="changeTab(1)">
+        <i class="fas fa-lightbulb"></i>
+    </div>
+
+    <div class="tab-item" onclick="changeTab(2)">
+        <i class="fas fa-door-open"></i>
+    </div>
+
+    <div class="tab-item" onclick="changeTab(3)">
+        <i class="fas fa-brain"></i>
+    </div>
+
+    <div class="tab-item" onclick="changeTab(4)">
+        <i class="fas fa-palette"></i>
+    </div>
+
+</div>
+
+<!-- =======================================================
+     TAB 0 : HOME
+======================================================= -->
+
+<div id="tab-0" class="tab-pane active">
+
+    <!-- Môi Trường -->
+    <h4 class="section-title">Môi Trường</h4>
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-6">
+            <div class="card p-3 card-khach">
+                <h6 class="fw-bold text-primary">
+                    <i class="fas fa-couch me-2"></i>Phòng Khách
+                </h6>
+
+                <div class="d-flex justify-content-around py-2">
+
+                    <div class="text-center">
+                        <i class="fas fa-thermometer-half text-danger mb-1"></i>
+                        <div class="h3 mb-0 fw-bold" id="temp-Khach">0°C</div>
+                    </div>
+
+                    <div class="text-center">
+                        <i class="fas fa-tint text-info mb-1"></i>
+                        <div class="h3 mb-0 fw-bold" id="humi-Khach">0%</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card p-3 card-ngu">
+
+                <h6 class="fw-bold text-warning">
+                    <i class="fas fa-bed me-2"></i>Phòng Ngủ
+                </h6>
+
+                <div class="d-flex justify-content-around py-2">
+
+                    <div class="text-center">
+                        <i class="fas fa-thermometer-three-quarters text-danger mb-1"></i>
+                        <div class="h3 mb-0 fw-bold" id="temp-Ngu">0°C</div>
+                    </div>
+
+                    <div class="text-center">
+                        <i class="fas fa-droplet text-info mb-1"></i>
+                        <div class="h3 mb-0 fw-bold" id="humi-Ngu">0%</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SECURITY -->
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3 col-6">
+            <div class="card p-3 text-center card-btn"
+                 id="btn-Security"
+                 onclick="toggleSecurity()">
+
+                <i class="fas fa-shield-alt fa-3x mb-2"
+                   id="icon-Security"></i>
+
+                <h6 class="fw-bold">An Ninh</h6>
+
+                <div id="val-Security"
+                     class="status-val">OFF</div>
+
+            </div>
+        </div>
+
+        <div class="col-md-3 col-6">
+
+            <div class="card p-3 text-center card-auto"
+                 id="card-Gas">
+
+                <i class="fas fa-fire fa-3x mb-2"
+                   id="icon-Gas"
+                   style="color:#e67e22;"></i>
+
+                <h6 class="fw-bold">Khí Gas</h6>
+
+                <div id="val-Gas"
+                     class="status-val text-success">
+
+                    An Toàn
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="card p-4 h-100"
+                 style="border-left:8px solid #0d6efd;">
+
+                <h6 class="fw-bold text-primary">
+                    <i class="fas fa-robot me-2"></i>AI RESPONSE:
+                </h6>
+
+                <p id="val-AI-Response"
+                   class="mb-0 fs-5 text-secondary italic">
+
+                    Đang chờ lệnh...
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- =======================================================
+     TAB 1 : DEVICE
+======================================================= -->
+
+<div id="tab-1" class="tab-pane">
+
+    <h4 class="section-title">Thiết Bị</h4>
+
+    <div class="row g-3 mb-4 control-group" id="device-group">
+        <div class="row g-3 mb-4 control-group" id="device-group">
+            <div class="col-md-2 col-6"><div class="card p-3 text-center card-btn" id="btn-Fan_Ngu" onclick="cycleValue('Devices/Fan_Ngu')"><i class="fas fa-fan fa-2x mb-2" id="icon-Fan_Ngu"></i><h6 class="small">Quạt Ngủ</h6><div id="val-Fan_Ngu" class="status-val level-0">0</div></div></div>
+            <div class="col-md-2 col-6"><div class="card p-3 text-center card-btn" id="btn-Fan_Khach" onclick="cycleValue('Devices/Fan_Khach')"><i class="fas fa-fan fa-2x mb-2" id="icon-Fan_Khach"></i><h6 class="small">Quạt Khách</h6><div id="val-Fan_Khach" class="status-val level-0">0</div></div></div>
+            <div class="col-md-2 col-6"><div class="card p-3 text-center card-auto"><i class="fas fa-wind fa-2x mb-2" id="icon-Fan_Toilet"></i><h6 class="small">Quạt Toilet</h6><div id="val-Fan_Toilet" class="status-val level-0">OFF</div></div></div>
+            <div class="col-md-2 col-6"><div class="card p-3 text-center card-btn" id="btn-Light_Ngu" onclick="cycleValue('Light/Ngu')"><i class="fas fa-moon fa-2x mb-2" id="icon-Light_Ngu"></i><h6 class="small">Đèn Ngủ</h6><div id="val-Light_Ngu" class="status-val level-0">0</div></div></div>
+            <div class="col-md-2 col-6"><div class="card p-3 text-center card-btn" id="btn-Light_Khach" onclick="cycleValue('Light/Khach')"><i class="fas fa-lightbulb fa-2x mb-2" id="icon-Light_Khach"></i><h6 class="small">Đèn Khách</h6><div id="val-Light_Khach" class="status-val level-0">0</div></div></div>
+            <div class="col-md-2 col-6"><div class="card p-3 text-center card-auto"><i class="fas fa-restroom fa-2x mb-2" id="icon-Light_Toilet"></i><h6 class="small">Đèn Toilet</h6><div id="val-Light_Toilet" class="status-val level-0">OFF</div></div></div>
+        </div>
+    </div>
+    <!-- SCENE -->
+
+    <h4 class="section-title">Ngữ Cảnh</h4>
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-9">
+
+            <div class="row g-2 control-group">
+
+                <div class="col-3">
+                    <button class="w-100 btn-scene bg-work"
+                            onclick="activateScenario('work')">
+
+                        <i class="fas fa-briefcase"></i>
+
+                        <span class="small d-block">
+                            ĐI LÀM
+                        </span>
+
+                    </button>
+                </div>
+
+                <div class="col-3">
+                    <button class="w-100 btn-scene bg-sleep"
+                            onclick="activateScenario('sleep')">
+
+                        <i class="fas fa-bed"></i>
+
+                        <span class="small d-block">
+                            ĐI NGỦ
+                        </span>
+
+                    </button>
+                </div>
+
+                <div class="col-3">
+                    <button class="w-100 btn-scene bg-movie"
+                            onclick="activateScenario('movie')">
+
+                        <i class="fas fa-film"></i>
+
+                        <span class="small d-block">
+                            XEM PHIM
+                        </span>
+
+                    </button>
+                </div>
+
+                <div class="col-3">
+                    <button class="w-100 btn-scene bg-party"
+                            onclick="activateScenario('party')">
+
+                        <i class="fas fa-glass-cheers"></i>
+
+                        <span class="small d-block">
+                            DỰ TIỆC
+                        </span>
+
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <button class="w-100 btn-scene bg-danger-custom"
+                    onclick="activateScenario('off_all')">
+
+                <i class="fas fa-power-off"></i>
+
+                <span class="small">
+                    TẮT TẤT CẢ
+                </span>
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =======================================================
+     TAB 2 : DOOR
+======================================================= -->
+
+<div id="tab-2" class="tab-pane">
+<!-- Cửa -->
+        <h4 class="section-title">Cửa & Giàn Phơi</h4>
+        <div class="row g-3 mb-4 control-group" id="door-group">
+            <div class="col-md-3 col-6"><div class="card p-3 text-center card-btn" id="btn-Main_Door" onclick="toggleServo('Devices/Main_Door')"><i class="fas fa-door-closed fa-2x mb-2" id="icon-Main_Door"></i><h6 class="small">Cửa Chính</h6><div id="val-Main_Door" class="status-val">CLOSE</div></div></div>
+            <div class="col-md-3 col-6"><div class="card p-3 text-center card-btn" id="btn-Window_Living" onclick="toggleWindow('Devices/Window_Living')"><i class="fas fa-window-maximize fa-2x mb-2" id="icon-Window_Living"></i><h6 class="small">Cửa Khách</h6><div id="val-Window_Living" class="status-val">CLOSE</div></div></div>
+            <div class="col-md-3 col-6"><div class="card p-3 text-center card-btn" id="btn-Window_Bed" onclick="toggleWindow('Devices/Window_Bed')"><i class="fas fa-window-restore fa-2x mb-2" id="icon-Window_Bed"></i><h6 class="small">Cửa Ngủ</h6><div id="val-Window_Bed" class="status-val">CLOSE</div></div></div>
+            <div class="col-md-3 col-6"><div class="card p-3 text-center card-btn" id="btn-Laundry" onclick="toggleWindow('Devices/Laundry')"><i class="fas fa-shirt fa-2x mb-2" id="icon-Laundry"></i><h6 class="small">Giàn Phơi</h6><div id="val-Laundry" class="status-val">CLOSE</div></div></div>
+        </div>
+
+        <!-- RFID -->
+        <h4 class="section-title">Quản lý Truy cập</h4>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="rfid-card h-100 shadow-sm">
+                    <h5 class="mb-3 fw-bold text-primary"><i class="fas fa-address-card me-2"></i>QUẢN LÝ THẺ RFID</h5>
+                    <div class="row g-2 mb-3">
+                        <div class="col-8"><input type="text" id="reg-card-name" class="form-control border-secondary" placeholder="Tên người dùng..."></div>
+                        <div class="col-4"><button class="btn-register btn btn-primary w-100" onclick="registerCard()">LƯU</button></div>
+                        <div class="col-12"><input type="text" id="reg-card-uid" class="form-control border-secondary mt-1" placeholder="Mã UID..." readonly></div>
+                    </div>
+                    <div class="scroll-area">
+                        <table class="rfid-table w-100">
+                            <thead><tr><th>Chủ thẻ</th><th>UID</th><th class="text-end">Xóa</th></tr></thead>
+                            <tbody id="rfid-list-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="rfid-card h-100 shadow-sm">
+                    <h5 class="mb-3 fw-bold text-danger"><i class="fas fa-history me-2"></i>LỊCH SỬ RA VÀO</h5>
+                    <div class="scroll-area mt-2">
+                        <table class="rfid-table w-100">
+                            <thead><tr><th>Thời gian</th><th>Người dùng</th><th>Trạng thái</th></tr></thead>
+                            <tbody id="access-logs-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+<!-- =======================================================
+     TAB 3 : AI
+======================================================= -->
+
+<div id="tab-3" class="tab-pane">
+    <h4 class="section-title">Hệ thống KNN AI</h4>
+        <!-- AI Switch -->
+        <div class="card p-3 shadow-lg mb-4" style="background: #1e293b; color: white;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-0 fw-bold text-info">KNN AI AUTO-LEARN & SECURITY OVERRIDE</h6>
+                    <small class="opacity-75">Bật AI: Chỉ điều khiển tay An Ninh & Tắt Khẩn Cấp, còn lại AI lo.</small>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="knn-ai-switch" onchange="handleAILock(this.checked)" style="transform: scale(1.6); cursor: pointer; margin-top: 4px;">
+                </div>
+            </div>
+        </div>
+    <div class="row g-3">
+        <div class="col-md-8">
+            <div class="card p-4">
+                <h5 class="fw-bold mb-3"><i class="fas fa-brain me-2 text-primary"></i>Thống kê thói quen (KNN Prediction)</h5>
+                <div id="knn-stats-container">
+                    <div class="knn-stat-card d-flex justify-content-between align-items-center">
+                        <span>Xác suất Đèn Khách (Bật):</span>
+                        <b id="val-prob_light_khach" class="text-primary">0%</b>
+                    </div>
+                    <div class="knn-stat-card d-flex justify-content-between align-items-center">
+                        <span>Xác suất Đèn Ngủ (Bật):</span>
+                        <b id="val-prob_light_ngu" class="text-primary">0%</b>
+                    </div>
+                    <div class="knn-stat-card d-flex justify-content-between align-items-center">
+                        <span>Xác suất Quạt Ngu (Bật):</span>
+                        <b id="val-prob_fan_ngu" class="text-primary">0%</b>
+                    </div>
+                    <div class="knn-stat-card d-flex justify-content-between align-items-center">
+                        <span>Xác suất Quạt Khách (Bật):</span>
+                        <b id="val-prob_fan_khach" class="text-primary">0%</b>
+                    </div>
+
+                    <div class="knn-stat-card d-flex justify-content-between align-items-center">
+                        <span>Xác suất Cửa sổ Khách (Mở):</span>
+                        <b id="val-prob_window_living" class="text-primary">0%</b>
+                    </div>
+                    <div class="knn-stat-card d-flex justify-content-between align-items-center">
+                        <span>Xác suất Cửa sổ Ngủ (Mở):</span>
+                        <b id="val-prob_window_bed" class="text-primary">0%</b>
+                    </div>
+
+                    <hr> <div class="knn-stat-card d-flex justify-content-between align-items-center">
+                        <span>Xác suất Ngữ cảnh ĐI LÀM:</span>
+                        <b id="val-prob_scene_work" class="text-info">0%</b>
+                    </div>
+                    <div class="knn-stat-card d-flex justify-content-between align-items-center">
+                        <span>Xác suất Ngữ cảnh ĐI NGỦ:</span>
+                        <b id="val-prob_scene_sleep" class="text-info">0%</b>
+                    </div>
+
+                    <div class="knn-stat-card d-flex justify-content-between align-items-center mt-2">
+                        <span>Thời gian thói quen cao nhất:</span>
+                        <b id="val-peak_hour" class="text-success">--:--</b>
+                    </div>
+                </div>
+                <hr>
+                <div class="alert alert-info py-2 small">
+                    <i class="fas fa-info-circle me-1"></i> Hệ thống đang sử dụng thuật toán KNN để so sánh dữ liệu hiện tại (Thời gian, Nhiệt độ, Ánh sáng) với 500 tập mẫu đã học.
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 text-center">
+                <h6 class="fw-bold">Tình trạng bộ nhớ AI</h6>
+                <div class="h2 my-3 text-primary" id="val-memory_count">0</div>
+                <p class="small text-muted">Mẫu dữ liệu đã thu thập</p>
+                <button class="btn btn-outline-danger btn-sm w-100" onclick="clearAIMemory()">Xóa bộ nhớ AI</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =======================================================
+     TAB 4 : RGB
+======================================================= -->
+
+<div id="tab-4" class="tab-pane">
+
+    <div class="row justify-content-center">
+
+    <div class="col-12">
+
+        <div class="card rgb-comingsoon-card text-center">
+
+            <div class="rgb-comingsoon-content">
+
+                <div class="mb-2">
+
+                    <i class="fas fa-tools rgb-icon"></i>
+
+                </div>
+
+                <h6 class="fw-bold text-dark mb-2">
+
+                    Chức năng đang phát triển
+
+                </h6>
+
+                <p class="text-secondary mb-2">
+
+                    Hệ thống điều khiển
+                    <b>LED RGB</b>
+
+                </p>
+
+                <span class="badge bg-warning text-dark">
+
+                    Coming Soon
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+<script>
+    // --- HÀM CHUYỂN TAB ---
+    function changeTab(index) {
+        document.querySelectorAll('.tab-pane').forEach((p, i) => {
+            p.classList.toggle('active', i === index);
+        });
+        document.querySelectorAll('.tab-item').forEach((t, i) => {
+            t.classList.toggle('active', i === index);
+        });
+    }
+
+const firebaseConfig = {
+        apiKey: "AIzaSyBYDsxWL0CgM22vuTqO4pN-MBaVAboq58",
+        databaseURL: "https://smart-home-dd3cf-default-rtdb.firebaseio.com",
+        projectId: "smart-home-dd3cf"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+
+    const toggleSwitch = document.querySelector('#checkbox');
+    function setTheme(theme) {
+        if (theme === 'dark') {
+            document.body.classList.add('dark-mode');
+            toggleSwitch.checked = true;
+        } else {
+            document.body.classList.remove('dark-mode');
+            toggleSwitch.checked = false;
+        }
+        localStorage.setItem('theme', theme);
+    }
+    
+    // --- 1. SỬA LOGIC AUTO THEME (ĐỂ TỰ ĐỘNG CHUYỂN MODE) ---
+    function checkAutoTheme() {
+        const hour = new Date().getHours();
+        // Xóa điều kiện manualTheme để nó luôn chạy theo giờ nếu ông muốn tự động hoàn toàn
+        if (hour >= 6 && hour < 18) {
+            setTheme('light');
+        } else {
+            setTheme('dark');
+        }
+    }
+    // Chạy kiểm tra mỗi phút để cập nhật mode liên tục theo thời gian thực
+    setInterval(checkAutoTheme, 60000);
+
+    toggleSwitch.addEventListener('change', (e) => {
+        localStorage.setItem('manualTheme', 'true');
+        setTheme(e.target.checked ? 'dark' : 'light');
+    });
+
+    window.onload = function() {
+        const loggedUser = localStorage.getItem('smartHomeUser');
+        document.getElementById('display-user-name').innerText = loggedUser || "Guest User";
+        checkAutoTheme();
+    };
+
+    // --- CẬP NHẬT GIAO DIỆN KHI NHẬN DỮ LIỆU ---
+    function updateUI(id, val) {
+        const el = document.getElementById('val-' + id);
+        const icon = document.getElementById('icon-' + id);
+        if(!el || !icon) return;
+
+        el.innerText = val;
+        
+        // Xử lý logic hiển thị mức độ (0, 1, 2, 3 hoặc chuỗi ngữ cảnh)
+        let levelNum = 0;
+        if (val === "ON" || val === "OPEN" || val === "SLEEP") levelNum = 1;
+        else if (val === "MOVIE") levelNum = 2;
+        else if (val === "PARTY" || val === "3") levelNum = 3;
+        else levelNum = parseInt(val) || 0;
+
+        // Reset class
+        icon.className = icon.className.replace(/level-\d|spinning\S*/g, "").trim();
+        
+        // Thêm class tương ứng mức độ
+        if (levelNum > 0) {
+            icon.classList.add('level-' + (levelNum > 3 ? 3 : levelNum));
+            if(id.includes('Fan')) {
+                icon.classList.add(levelNum >= 3 ? 'spinning-fast' : 'spinning');
+            }
+        }
+    }
+
+    // Lắng nghe Đèn và Quạt (Đảm bảo khớp nốt với Pi 4)
+    const devicePaths = {
+        'Fan_Ngu': 'Devices/Fan_Ngu', 
+        'Fan_Khach': 'Devices/Fan_Khach', 
+        'Light_Ngu': 'Light/Ngu', 
+        'Light_Khach': 'Light/Khach'
+    };
+    for(let id in devicePaths) { 
+        db.ref(devicePaths[id]).on('value', s => updateUI(id, s.val())); 
+    }
+
+    // 1. Lắng nghe Đèn Toilet
+firebase.database().ref('Light/Toilet').on('value', (snapshot) => {
+    const val = snapshot.val();
+    const display = document.getElementById('val-Light_Toilet');
+    const icon = document.getElementById('icon-Light_Toilet');
+    
+    if (val >= 1) {
+        display.innerText = "ON";
+        display.className = "status-val level-3"; // Đổi màu chữ cho đẹp
+        icon.style.color = "#ffc107"; // Đèn sáng màu vàng
+    } else {
+        display.innerText = "OFF";
+        display.className = "status-val level-0";
+        icon.style.color = "#6c757d"; // Đèn tắt màu xám
+    }
+});
+
+// 2. Lắng nghe Quạt Toilet
+firebase.database().ref('Devices/Fan_Toilet').on('value', (snapshot) => {
+    const val = snapshot.val();
+    const display = document.getElementById('val-Fan_Toilet');
+    const icon = document.getElementById('icon-Fan_Toilet');
+    
+    if (val >= 1) {
+        display.innerText = "ON";
+        display.className = "status-val level-3";
+        icon.style.color = "#ffc107"; // Quạt sáng màu vàng
+    } else {
+        display.innerText = "OFF";
+        display.className = "status-val level-0";
+        icon.style.color = "#6c757d"; // Quạt tắt màu xám
+    }
+});
+
+
+
+function clearAIMemory() {
+        if (confirm("Hiếu có chắc chắn muốn xóa sạch bộ nhớ thói quen của AI không? Việc này không thể hoàn tác!")) {
+            // 1. Xóa dữ liệu thống kê trên Firebase
+            db.ref('AI/Stats').update({
+                'memory_count': 0,
+                'prob_light_khach': "0%",
+                'prob_fan_ngu': "0%",
+                'prob_scene_work': "0%",
+                'prob_scene_sleep': "0%"
+            });
+
+            // 2. Gửi tín hiệu để Python trên Pi biết mà xóa file CSV
+            // Mình sẽ tạo một nốt 'System/ResetAI' và cho Pi lắng nghe nốt này
+            db.ref('System/ResetAI').set(true).then(() => {
+                alert("Đã gửi lệnh xóa bộ nhớ. Hệ thống sẽ khởi động lại dữ liệu!");
+            });
+        }
+    }
+
+    // Lắng nghe An Ninh (Sửa nốt thành SecurityMode cho khớp Pi 4)
+    db.ref('System/SecurityMode').on('value', s => {
+        const v = s.val();
+        document.getElementById('val-Security').innerText = (v == 1 || v == true) ? "ON" : "OFF";
+        document.getElementById('icon-Security').className = "fas fa-shield-alt fa-3x mb-2 " + ((v == 1 || v == true) ? "text-danger" : "text-muted");
+    });
+
+    // Lắng nghe Cảm biến
+    db.ref('Sensors/Khach/Temp').on('value', s => { document.getElementById('temp-Khach').innerText = (s.val() || 0) + "°C"; });
+    db.ref('Sensors/Khach/Humi').on('value', s => { document.getElementById('humi-Khach').innerText = (s.val() || 0) + "%"; });
+    db.ref('Sensors/Ngu/Temp').on('value', s => { document.getElementById('temp-Ngu').innerText = (s.val() || 0) + "°C"; });
+    db.ref('Sensors/Ngu/Humi').on('value', s => { document.getElementById('humi-Ngu').innerText = (s.val() || 0) + "%"; });
+
+    // Lắng nghe Gas
+    db.ref('Security/Gas').on('value', s => {
+    const gasVal = s.val();
+    console.log("Dữ liệu Gas từ Firebase:", gasVal); // Thêm dòng này để debug
+    console.log("Kiểu dữ liệu:", typeof gasVal);      // Thêm dòng này để check xem là số hay chuỗi
+
+    const card = document.getElementById('card-Gas');
+    const valTxt = document.getElementById('val-Gas');
+    if(gasVal === "DANGER" || gasVal === 1 || gasVal === "1") { 
+        card.classList.add('bg-danger', 'text-white'); 
+        valTxt.innerText = "DANGER"; 
+    }
+    else { 
+        card.classList.remove('bg-danger', 'text-white'); 
+        valTxt.innerText = "An Toàn"; 
+    }
+});
+
+    // Lắng nghe phản hồi AI
+    db.ref('System/VoiceResponse').on('value', s => { 
+        const resp = s.val();
+        if(!resp || resp === "None") return; 
+        document.getElementById('val-AI-Response').innerText = resp;
+    });
+
+  // --- LẮNG NGHE DỮ LIỆU KNN AI ---
+db.ref('AI/Stats').on('value', s => {
+
+    const aiData = s.val();
+
+    if (aiData) {
+
+        // 1. Xác suất Đèn
+        if (document.getElementById('val-prob_light_khach'))
+            document.getElementById('val-prob_light_khach').innerText =
+                aiData.prob_light_khach || "0%";
+
+        if (document.getElementById('val-prob_light_ngu'))
+            document.getElementById('val-prob_light_ngu').innerText =
+                aiData.prob_light_ngu || "0%";
+
+
+        // 2. Xác suất Quạt
+        if (document.getElementById('val-prob_fan_khach'))
+            document.getElementById('val-prob_fan_khach').innerText =
+                aiData.prob_fan_khach || "0%";
+
+        if (document.getElementById('val-prob_fan_ngu'))
+            document.getElementById('val-prob_fan_ngu').innerText =
+                aiData.prob_fan_ngu || "0%";
+
+
+        // 3. Xác suất Cửa sổ
+        if (document.getElementById('val-prob_window_living'))
+            document.getElementById('val-prob_window_living').innerText =
+                aiData.prob_window_living || "0%";
+
+        if (document.getElementById('val-prob_window_bed'))
+            document.getElementById('val-prob_window_bed').innerText =
+                aiData.prob_window_bed || "0%";
+
+
+        // 4. Xác suất Ngữ cảnh
+        if (document.getElementById('val-prob_scene_work'))
+            document.getElementById('val-prob_scene_work').innerText =
+                aiData.prob_scene_work || "0%";
+
+        if (document.getElementById('val-prob_scene_sleep'))
+            document.getElementById('val-prob_scene_sleep').innerText =
+                aiData.prob_scene_sleep || "0%";
+
+
+        // 5. Tổng bộ nhớ AI
+        if (document.getElementById('val-memory_count')) {
+
+            const totalMemory =
+
+                (aiData.light_khach_memory || 0) +
+                (aiData.fan_khach_memory || 0) +
+                (aiData.light_ngu_memory || 0) +
+                (aiData.fan_ngu_memory || 0);
+
+            document.getElementById('val-memory_count').innerText =
+                totalMemory;
+        }
+
+
+        // 6. Peak hour
+        if (document.getElementById('val-peak_hour')) {
+
+            document.getElementById('val-peak_hour').innerText =
+                aiData.peak_hour || "--:--";
+        }
+    }
+
+}); // 🔥 thiếu dòng này
+
+
+// =====================================================
+// SECURITY
+// =====================================================
+
+function toggleSecurity() {
+
+    db.ref('System/SecurityMode')
+    .once('value')
+    .then(s => {
+
+        const currentState = s.val();
+
+        db.ref('System/SecurityMode').set(
+            (currentState == 1 || currentState == true)
+            ? 0
+            : 1
+        );
+    });
+}
+
+
+// --- LẮNG NGHE CỬA SỔ & GIÀN PHƠI (Chỉ thêm phần này) ---
+    const windowPaths = {
+        'Window_Living': 'Devices/Window_Living',
+        'Window_Bed': 'Devices/Window_Bed',
+        'Laundry': 'Devices/Laundry',
+        'Main_Door': 'Devices/Main_Door'
+    };
+    for(let id in windowPaths) {
+        db.ref(windowPaths[id]).on('value', s => {
+            const v = s.val() || "CLOSE";
+            const display = document.getElementById('val-' + id);
+            const icon = document.getElementById('icon-' + id);
+            if(display) display.innerText = v;
+            if(icon) {
+                if(v === "OPEN") icon.classList.add('text-success');
+                else icon.classList.remove('text-success');
+            }
+        });
+    }
+
+// 1. Lấy reference đến ô nhập UID
+const uidInput = document.querySelector('input[placeholder="Mã UID..."]');
+
+// 2. Lắng nghe nốt 'System/Last_Unknown_Card' trên Firebase
+db.ref('System/Last_Unknown_Card').on('value', (snapshot) => {
+    const lastUID = snapshot.val();
+    
+    if (lastUID) {
+        // Tự động điền vào ô Input
+        uidInput.value = lastUID;
+        
+        // (Tùy chọn) Hiệu ứng thông báo nhỏ cho ông biết là đã nhận thẻ
+        console.log("Đã nhận diện UID mới: " + lastUID);
+    }
+});
+
+    function registerCard() {
+    const userName = document.querySelector('input[placeholder="Tên người dùng..."]').value;
+    const cardUID = document.querySelector('input[placeholder="Mã UID..."]').value;
+
+    if (userName && cardUID) {
+        // Đẩy lên Firebase vào đúng cấu trúc mà Pi đang đọc
+        db.ref('RFID_Cards/' + cardUID).set({
+            name: userName
+        }).then(() => {
+            alert("Đăng ký thẻ thành công!");
+            // Xóa trống ô nhập sau khi lưu
+            document.querySelector('input[placeholder="Tên người dùng..."]').value = "";
+            document.querySelector('input[placeholder="Mã UID..."]').value = "";
+            db.ref('System/Last_Unknown_Card').remove();
+        }).catch((error) => {
+            console.error("Lỗi đăng ký:", error);
+        });
+    } else {
+        alert("Vui lòng nhập đầy đủ Tên và Mã UID!");
+    }
+
+}
+
+    // Hàm này tự động chạy để cập nhật bảng danh sách thẻ
+    function loadRFIDList() {
+    const tableBody = document.getElementById('rfid-list-body');
+    
+    db.ref('RFID_Cards').on('value', (snapshot) => {
+        let html = '';
+        const cards = snapshot.val();
+
+        if (cards) {
+            Object.keys(cards).forEach((uid) => {
+                const cardData = cards[uid];
+                html += `
+                    <tr>
+                        <td class="text-emphasis font-weight-bold">${cardData.name}</td>
+                        <td class="text-emphasis opacity-75">${uid}</td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-outline-danger border-0" onclick="deleteCard('${uid}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        } else {
+            html = '<tr><td colspan="3" class="text-center text-muted">Chưa có thẻ nào được đăng ký</td></tr>';
+        }
+        
+        if (tableBody) tableBody.innerHTML = html;
+    });
+}
+    // Hàm xóa thẻ khi nhấn vào nút thùng rác
+    function deleteCard(uid) {
+    if (confirm("Hiếu có chắc muốn xóa thẻ này không?")) {
+        db.ref('RFID_Cards/' + uid).remove()
+            .then(() => alert("Đã xóa thẻ thành công!"));
+    }
+}
+
+// --- CÁC HÀM ĐIỀU KHIỂN ---
+    function toggleWindow(path) {
+        db.ref(path).once('value').then(snap => {
+            let currentV = snap.val() || "CLOSE";
+            let newV = (currentV === "CLOSE") ? "OPEN" : "CLOSE";
+            db.ref(path).set(newV);
+        });
+    }
+
+function loadAccessLogs() {
+    const logBody = document.getElementById('access-logs-body');
+
+    // Lắng nghe nốt Access_Logs, giới hạn 10 bản tin mới nhất
+    db.ref('Access_Logs').limitToLast(10).on('value', (snapshot) => {
+        let html = '';
+        const logs = snapshot.val();
+
+        if (logs) {
+            // Chuyển object thành array và đảo ngược để cái mới nhất hiện lên đầu
+            const logArray = Object.values(logs).reverse();
+
+            logArray.forEach((log) => {
+                html += `
+                    <tr>
+                        <td class="text-emphasis opacity-75" style="font-size: 0.85rem;">${log.time}</td>
+                        <td class="text-emphasis">${log.name}</td>
+                        <td><span class="badge bg-success">Mở cửa</span></td>
+                    </tr>
+                `;
+            });
+        } else {
+            html = '<tr><td colspan="3" class="text-center text-muted">Chưa có dữ liệu ra vào</td></tr>';
+        }
+        
+        if (logBody) logBody.innerHTML = html;
+    });
+}
+
+// Đừng quên gọi hàm này khi load trang nhé
+document.addEventListener('DOMContentLoaded', () => {
+    loadRFIDList();
+    loadAccessLogs(); // Gọi thêm hàm này
+});
+
+
+
+    function handleAILock(isChecked) {
+
+    const valueToSend = isChecked ? 1 : 0;
+
+    // =========================================
+    // FIREBASE
+    // =========================================
+
+    firebase.database()
+    .ref('System/AI_Mode')
+    .set(valueToSend)
+
+    .then(() => {
+
+        console.log(
+            "Đã cập nhật AI_Mode thành: "
+            + valueToSend
+        );
+
+    })
+
+    .catch((error) => {
+
+        console.error(
+            "Lỗi cập nhật Firebase:",
+            error
+        );
+
+    });
+
+
+    // =========================================
+    // KHÓA CONTROL KHI AI BẬT
+    // =========================================
+
+    const groups = document.querySelectorAll(
+        '.control-group, .card-device'
+    );
+
+    groups.forEach(group => {
+
+        // ==============================
+        // BỎ QUA:
+        // - Tắt hết
+        // - Security
+        // ==============================
+
+        const isExempt =
+
+            group.innerText.includes("Tắt") ||
+
+            group.innerText.includes("An Ninh") ||
+
+            group.id.includes("Security") ||
+
+            group.querySelector('.fa-shield-alt')||
+            group.querySelector('#knn-ai-switch');
+
+
+        // ==============================
+        // AI ON
+        // ==============================
+
+        if (isChecked && !isExempt) {
+
+            group.style.opacity = "0.4";
+
+            group.style.pointerEvents = "none";
+
+            group.style.filter = "grayscale(1)";
+        }
+
+        // ==============================
+        // AI OFF
+        // ==============================
+
+        else {
+
+            group.style.opacity = "1";
+
+            group.style.pointerEvents = "auto";
+
+            group.style.filter = "none";
+        }
+    });
+}
+
+    // Đồng bộ ngược lại: Khi load trang, nếu Firebase đang là 1 thì tự gạt switch sang On
+    firebase.database().ref('System/AI_Mode').on('value', (snapshot) => {
+    const aiMode = snapshot.val();
+    const aiSwitch = document.getElementById('knn-ai-switch');
+    if (aiSwitch) {
+        aiSwitch.checked = (aiMode === 1 || aiMode === true);
+    }
+});
+
+
+
+    
+
+// Lắng nghe thẻ lạ quẹt từ Pi
+db.ref('System/Last_Unknown_Card').on('value', (snapshot) => {
+    const uid = snapshot.val();
+    if (uid && uid !== "None") {
+        // Tự động điền vào ô nhập UID
+        document.querySelector('input[placeholder="Mã UID..."]').value = uid;
+    }
+}); 
+
+    // --- CÁC HÀM ĐIỀU KHIỂN ---
+    function activateScenario(type) {
+        // Reset trạng thái cũ
+        db.ref('System/SecurityMode').set(0);
+        
+        if(type === 'work') {
+            db.ref('System/SecurityMode').set(1);
+            db.ref('Light/Khach').set(0);
+            db.ref('Light/Ngu').set(0);
+            db.ref('Devices/Fan_Ngu').set(0);
+            db.ref('Devices/Fan_Khach').set(0);
+            db.ref('Devices/Main_Door').set("CLOSE");
+            db.ref('Devices/Window_Bed').set("CLOSE");
+            db.ref('Devices/Window_Living').set("CLOSE");
+        } else if(type === 'sleep') {
+            db.ref('System/SecurityMode').set(1);
+            db.ref('Light/Ngu').set("SLEEP");
+            db.ref('Devices/Fan_Ngu').set(2);
+            db.ref('Devices/Fan_Khach').set(0);
+            db.ref('Light/Khach').set(0);
+            db.ref('Devices/Window_Bed').set("CLOSE");
+            db.ref('Devices/Window_Living').set("CLOSE");
+        } else if(type === 'movie') {
+            db.ref('Light/Khach').set("MOVIE");
+            db.ref('Devices/Fan_Khach').set(2);
+            db.ref('Light/Ngu').set(0);
+            db.ref('Devices/Fan_Ngu').set(0);
+            db.ref('Devices/Window_Bed').set("CLOSE");
+            db.ref('Devices/Window_Living').set("CLOSE");
+        } else if(type === 'party') {
+            db.ref('Light/Khach').set("PARTY");
+            db.ref('Devices/Fan_Khach').set(3);
+            db.ref('Light/Ngu').set(0);
+            db.ref('Devices/Fan_Ngu').set(0);
+            db.ref('Devices/Window_Bed').set("CLOSE");
+            db.ref('Devices/Window_Living').set("OPEN");
+        } else if(type === 'off_all') {
+            db.ref('Light/Khach').set(0);
+            db.ref('Light/Ngu').set(0);
+            db.ref('Devices/Fan_Khach').set(0);
+            db.ref('Devices/Fan_Ngu').set(0);
+            db.ref('Devices/Window_Bed').set("CLOSE");
+            db.ref('Devices/Window_Living').set("CLOSE");
+        }
+        
+    }
+    // --- ĐOẠN NÀY ĐỂ BÊN NGOÀI HÀM (Cập nhật giao diện tự động) ---
+    db.ref('Devices/Laundry').on('value', snapshot => {
+        const status = snapshot.val() || "CLOSE";
+        const statusText = document.getElementById('val-Laundry');
+        if (statusText) statusText.innerText = status;
+
+        const icon = document.getElementById('icon-Laundry');
+        if (icon) {
+            status === "OPEN" ? icon.classList.add('text-success') : icon.classList.remove('text-success');
+        }
+    });
+
+    function toggleServo(path) {
+        db.ref(path).once('value').then(snap => {
+            let currentV = snap.val() || "CLOSE";
+            let newV = (currentV === "CLOSE") ? "OPEN" : "CLOSE";
+            db.ref(path).set(newV);
+        });
+    }
+
+    function cycleValue(path) {
+        db.ref(path).once('value').then(snap => {
+            let v = parseInt(snap.val()) || 0;
+            db.ref(path).set(v >= 3 ? 0 : v + 1);
+        });
+    }
+    
+    setInterval(() => { 
+        document.getElementById('time-display').innerText = new Date().toLocaleTimeString('vi-VN', { hour12: false }); 
+    }, 1000);
+
+    async function logout(){
+
+    try{
+
+        await firebase.database()
+        .ref("System")
+        .update({
+
+            Active:false
+
+        });
+
+        localStorage.removeItem(
+            "smartHomeUser"
+        );
+
+        setTimeout(()=>{
+
+            window.location.href =
+            "./index.html";
+
+        },300);
+
+    }catch(e){
+
+        console.log(e);
+    }
+}
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+    const aiSwitch =
+        document.getElementById('knn-ai-switch');
+
+    if (aiSwitch) {
+
+        aiSwitch.addEventListener('change', function () {
+
+            handleAILock(this.checked);
+
+        });
+    }
+    function clearUser() {
+
+    localStorage.removeItem('smartHomeUser');
+
+    }
+});
+</script>
+</body>
+</html>

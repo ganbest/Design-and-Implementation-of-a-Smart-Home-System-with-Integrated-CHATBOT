@@ -1,0 +1,37 @@
+# ===== UART =====
+
+SERIAL_PORT = "/dev/serial0"
+
+UART_BAUDRATE = 115200
+
+
+
+# ===== GPIO =====
+
+RAIN_PIN = 17
+
+
+
+# ===== SERVO =====
+
+DOOR_OPEN_ANGLE = 90
+DOOR_CLOSE_ANGLE = 0
+
+WINDOW_OPEN_ANGLE = 90
+WINDOW_CLOSE_ANGLE = 0
+
+
+
+# ===== VOICE =====
+
+VOICE_TIMEOUT = 7
+
+VOICE_PHRASE_LIMIT = 10
+
+VOICE_WAKE_WORD = "alo"
+
+
+
+# ===== AI =====
+
+AI_THRESHOLD = 80

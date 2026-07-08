@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Smart Home Pro AI </string>
+    <string name="title_activity_main">Smart Home Pro AI </string>
+    <string name="package_name">com.smarthome.proai</string>
+    <string name="custom_url_scheme">com.smarthome.proai</string>
+</resources>

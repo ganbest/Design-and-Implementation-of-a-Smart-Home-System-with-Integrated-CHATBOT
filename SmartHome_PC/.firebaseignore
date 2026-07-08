@@ -1,0 +1,22 @@
+# Bỏ qua các thư mục nặng và môi trường ảo
+node_modules/
+.firebase/
+functions/node_modules/
+venv/
+env/
+__pycache__/
+
+# Bỏ qua các file thực thi và binary (Thủ phạm gây lỗi 400)
+*.exe
+*.bin
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.dll
+
+# Bỏ qua code logic của Raspberry Pi (Chỉ đẩy Web)
+*.py
+*.csv
+*.json
+!firebase.json
