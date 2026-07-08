@@ -7,6 +7,7 @@ Mô hình hệ thống Nhà thông minh (Smart Home) toàn diện ứng dụng k
 ## 🚀 Kiến Trúc Hệ Thống (System Architecture)
 
 Hệ thống được thiết kế theo mô hình phân lớp xử lý song song nhằm tối ưu hóa băng thông và giảm thiểu độ trễ:
+
                                 ┌───────────────────────┐
                                 │    OpenAI API (GPT)   │
                                 └───────────▲───────────┘
