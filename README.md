@@ -63,6 +63,7 @@ Hệ thống được thiết kế theo mô hình phân lớp xử lý song song
 
 <img width="466" height="749" alt="image" src="https://github.com/user-attachments/assets/c1d93db3-4fca-49d5-942b-00c2033a5463" />
 <img width="439" height="749" alt="image" src="https://github.com/user-attachments/assets/e3064060-591a-42d4-ac85-eddfb4804e3d" />
+<img width="446" height="653" alt="image" src="https://github.com/user-attachments/assets/5bb2ee3f-30f7-4215-8c3a-d16adc6b1487" />
 
 
 
